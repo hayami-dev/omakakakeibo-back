@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transactions {
+public class Transaction {
 	private Long transactionId; // SERIAL -> Long
 	private Long userId; // INTEGER -> Long
 	private Long activeCatId; // INTEGER -> Long

@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MonthlyBudgets {
-	private Long budgetId; // SERIAL -> Long
+public class ActiveCategory {
+	private Long activeCatId; // SERIAL -> Long
 	private Long userId; // INTEGER -> Long
-	private String targetMonth; // CHAR(7) -> String
-	private Integer targetAmount;
+	private String categoryName;
+	private Long colorIndex; // INTEGER -> Long
 	private LocalDateTime updatedAt;
 }
