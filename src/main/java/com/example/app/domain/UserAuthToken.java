@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAuthTokens {
+public class UserAuthToken {
 	private Long tokenId; // SERIAL -> Long
 	private Long userId; // INTEGER -> Long
 	private String tokenType;

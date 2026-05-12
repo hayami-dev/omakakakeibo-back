@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryColors {
+public class CategoryColor {
 	private Long colorIndex; // SERIAL -> Long
 	private String label;
 	private String code;

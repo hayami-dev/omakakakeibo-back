@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActiveCategories {
-	private Long activeCatId; // SERIAL -> Long
+public class ArchivedCategory {
+	private Long archivedCatId; // SERIAL -> Long
 	private Long userId; // INTEGER -> Long
 	private String categoryName;
 	private Long colorIndex; // INTEGER -> Long
-	private LocalDateTime updatedAt;
+	private LocalDateTime archivedAt;
 }

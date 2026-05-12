@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BudgetLogs {
+public class BudgetLog {
 	private Long budgetId; // SERIAL -> Long
 	private Long userId; // INTEGER -> Long
 	private String targetMonth; // CHAR(7) -> String
