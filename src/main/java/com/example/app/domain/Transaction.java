@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 public class Transaction {
 	private Long transactionId; // SERIAL -> Long
 	private Long userId; // INTEGER -> Long
-	private Long activeCatId; // INTEGER -> Long
-	private Long archivedCatId; // INTEGER -> Long
+	private Long categoryId; // INTEGER -> Long
 	private Integer amount;
 	private String memo;
 	private Boolean isSubscription;
