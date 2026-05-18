@@ -14,6 +14,7 @@ public class CategoryMaster {
 	private Long userId; // INTEGER -> Long
 	private String categoryName;
 	private Integer colorIndex; // INTEGER -> Long
+	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private Boolean isActive;
 }

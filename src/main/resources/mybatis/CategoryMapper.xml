@@ -5,9 +5,7 @@
 	<select id="findByUserId"
 		resultType="com.example.app.dto.CategoryResponse">
 		SELECT
-		a.active_cat_id,
-		a.user_id,
-		m.category_id,
+		a.*,
 		m.category_name,
 		m.color_index
 		FROM active_categories AS a

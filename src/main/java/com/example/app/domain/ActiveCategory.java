@@ -1,5 +1,7 @@
 package com.example.app.domain;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,4 +13,6 @@ public class ActiveCategory {
 	private Long activeCatId; // SERIAL -> Long
 	private Long userId; // INTEGER -> Long
 	private Long categoryId;
+	private LocalDateTime updatedAt;
+
 }
