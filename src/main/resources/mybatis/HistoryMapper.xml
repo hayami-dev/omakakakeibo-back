@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.app.mapper.HistoryMapper">
+	<!-- histories全件取得 -->
+	<select id="findByUserId"
+		resultType="com.example.app.domain.History">
+		SELECT * FROM histories ORDER BY history_date ASC
+	</select>
+
+	<!-- 新規追加 -->
+	<insert id="addHistory">
+		INSERT INTO histories(user_id,
+		category_id, amount,
+		history_date, note, created_at)
+		VALUES(#{userId},
+		#{history.categoryId},
+		#{history.amount}, #{history.historyDate},
+		"",NOW())
+	</insert>
+
+	<!-- 編集 -->
+	<update id="editHistory">
+		UPDATE histories
+		SET category_id =
+		#{history.categoryId},
+		amount = #{history.amount},
+		history_date =
+		#{history.historyDate}
+		WHERE history_id = #{historyId}
+		AND user_id =
+		#{userId}
+	</update>
+
+	<!--削除 -->
+	<delete id="deleteHistory">
+		DELETE FROM histories
+		WHERE history_id = #{historyId}
+		AND user_id =
+		#{userId}
+	</delete>
+
+</mapper>

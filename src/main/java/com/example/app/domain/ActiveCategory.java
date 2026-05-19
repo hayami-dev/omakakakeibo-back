@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class ActiveCategory {
 	private Long activeCatId; // SERIAL -> Long
 	private Long userId; // INTEGER -> Long
-	private String categoryName;
-	private Long colorIndex; // INTEGER -> Long
+	private Long categoryId;
 	private LocalDateTime updatedAt;
+
 }
