@@ -4,6 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +30,18 @@ public class BudgetController {
 			@PathVariable("targetMonth") String targetMonth) {
 		MonthlyBudget mb = budgetMapper.findByMonth(targetMonth, userId);
 		return ResponseEntity.ok(mb);
+	}
+
+	// 今月の目標金額を追加
+	// http://localhost:8080/budget/add/1
+	@PostMapping("/add")
+	public ResponseEntity<String> addMonthBudget(
+			@RequestBody MonthlyBudget monthlyBudget) {
+		budgetMapper.addMonthlyBudget(
+				monthlyBudget.getTargetMonth(),
+				monthlyBudget.getUserId(),
+				monthlyBudget.getTargetAmount());
+		return ResponseEntity.ok("Success");
 	}
 
 }
