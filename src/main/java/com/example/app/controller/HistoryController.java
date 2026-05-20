@@ -29,9 +29,10 @@ public class HistoryController {
 	//histories全件を取得
 	// http://localhost:8080/histories/1
 	@GetMapping("/{userId}")
-	public List<History> findAllHistories(
+	public ResponseEntity<List<History>> findAllHistories(
 			@PathVariable("userId") Long userId) {
-		return historyMapper.findByUserId(userId);
+		List<History> histories = historyMapper.findByUserId(userId);
+		return ResponseEntity.ok(histories);
 	}
 
 	// historyIdから1件を取得
