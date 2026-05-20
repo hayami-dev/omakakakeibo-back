@@ -12,7 +12,7 @@
 		INSERT INTO histories(user_id,
 		category_id, amount,
 		history_date, note, created_at)
-		VALUES(#{userId},
+		VALUES(#{history.userId},
 		#{history.categoryId},
 		#{history.amount}, #{history.historyDate},
 		"",NOW())

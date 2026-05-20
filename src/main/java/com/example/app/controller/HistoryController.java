@@ -35,16 +35,12 @@ public class HistoryController {
 		return ResponseEntity.ok(histories);
 	}
 
-	// historyIdから1件を取得
-
 	// 新規追加
-	// http://localhost:8080/histories/add/1
-	@PostMapping("/add/{userId}")
+	// http://localhost:8080/histories/add
+	@PostMapping("/add")
 	public ResponseEntity<String> addHistory(
-			@PathVariable("userId") Long userId,
 			@RequestBody History history) {
-		historyMapper.addHistory(userId, history);
-
+		historyMapper.addHistory(history);
 		return ResponseEntity.ok("Success");
 	}
 
