@@ -19,7 +19,7 @@ import com.example.app.mapper.HistoryMapper;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/histories")
+@RequestMapping("/api/histories")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:5173")
 public class HistoryController {

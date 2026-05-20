@@ -15,7 +15,7 @@ import com.example.app.mapper.BudgetMapper;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/budget")
+@RequestMapping("/api/budget")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:5173")
 public class BudgetController {
@@ -23,7 +23,7 @@ public class BudgetController {
 	private final BudgetMapper budgetMapper;
 
 	// 年月を指定して目標金額を取得
-	// http://localhost:8080/budget/1/2026-03
+	// http://localhost:8080/api/budget/1/2026-03
 	@GetMapping("/{userId}/{targetMonth}")
 	public ResponseEntity<MonthlyBudget> getMonthlyBudget(
 			@PathVariable("userId") Long userId,
@@ -33,7 +33,7 @@ public class BudgetController {
 	}
 
 	// 今月の目標金額を追加
-	// http://localhost:8080/budget/add/1
+	// http://localhost:8080/api/budget/add/1
 	@PostMapping("/add")
 	public ResponseEntity<String> addMonthBudget(
 			@RequestBody MonthlyBudget monthlyBudget) {
