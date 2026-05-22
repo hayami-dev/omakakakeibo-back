@@ -3,6 +3,7 @@ package com.example.app.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.app.domain.CategoryMaster;
-import com.example.app.dto.CategoryResponse;
+import com.example.app.domain.DtoCategoryResponse;
 import com.example.app.mapper.CategoryMapper;
 
 @RestController
@@ -26,17 +27,18 @@ public class CategoryController {
 
 	// アクティブを全件返す：http://localhost:8080/api/categories/active/1
 	@GetMapping("/active/{userId}")
-	public List<CategoryResponse> getActiveCategories(
+	public ResponseEntity<List<DtoCategoryResponse>> getActiveCategories(
 			@PathVariable("userId") Long userId) {
-		return categoryMapper.findByUserId(userId);
+		List<DtoCategoryResponse> categories = categoryMapper.findByUserId(userId);
+		return ResponseEntity.ok(categories);
 	}
 
 	// 新しいカテゴリの登録するフロー
 	@PutMapping("/update")
 	@Transactional
-	public void updateCategories(
-			@RequestBody List<CategoryResponse> response) {
-		for (CategoryResponse res : response) {
+	public ResponseEntity<String> updateCategories(
+			@RequestBody List<DtoCategoryResponse> response) {
+		for (DtoCategoryResponse res : response) {
 			// 現在のDBの状態を取得
 			CategoryMaster currentMaster = categoryMapper.findById(res.getUserId(), res.getCategoryId());
 
@@ -73,23 +75,26 @@ public class CategoryController {
 					res.getUserId(),
 					newMaster.getCategoryId());
 		}
+		return ResponseEntity.ok("Success");
 	}
 
 	// 指定されたuser_idのmaster_categoriesテーブルを全件返す
 	// http://localhost:8080/api/categories/master/1
 	@GetMapping("/master/{userId}")
-	public List<CategoryMaster> getCategoriesMaster(
+	public ResponseEntity<List<CategoryMaster>> getCategoriesMaster(
 			@PathVariable("userId") Long userId) {
-		return categoryMapper.findAllCategoriesMaster(userId);
+		List<CategoryMaster> categoryMasterList = categoryMapper.findAllCategoriesMaster(userId);
+		return ResponseEntity.ok(categoryMasterList);
 	}
 
 	// 指定されたuser_idとcategory_idから1件を返す
 	// http://localhost:8080/api/categories/master/1/1
 	@GetMapping("/master/{userId}/{categoryId}")
-	public CategoryMaster getMasterCategoryById(
+	public ResponseEntity<CategoryMaster> getMasterCategoryById(
 			@PathVariable("userId") Long userId,
 			@PathVariable("categoryId") Long categoryId) {
-		return categoryMapper.findById(userId, categoryId);
+		CategoryMaster categoryMaster = categoryMapper.findById(userId, categoryId);
+		return ResponseEntity.ok(categoryMaster);
 	}
 
 	// TODO：nameが空欄かつfalseのカテゴリをMasterから削除

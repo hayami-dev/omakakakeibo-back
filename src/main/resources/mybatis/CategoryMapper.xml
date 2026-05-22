@@ -3,7 +3,7 @@
 <mapper namespace="com.example.app.mapper.CategoryMapper">
 	<!-- ユーザー毎のactive_categoriesを取得 -->
 	<select id="findByUserId"
-		resultType="com.example.app.dto.CategoryResponse">
+		resultType="DtoCategoryResponse">
 		SELECT
 		a.*,
 		m.category_name,
@@ -55,7 +55,7 @@
 
 	<!-- 渡されたcategory_idを元に該当のカテゴリを返す -->
 	<select id="findById"
-		resultType="com.example.app.domain.CategoryMaster">
+		resultType="CategoryMaster">
 		SELECT * FROM categories_master
 		WHERE category_id =
 		#{categoryId}

@@ -13,14 +13,8 @@ public interface HistoryMapper {
 	// histories全件取得
 	List<History> findByUserId(@Param("userId") Long userId);
 
-	// 1件をidから取得
-	History findByHistoryId(
-			@Param("userId") Long userId,
-			@Param("history") Long historyId);
-
 	// 新規追加
 	void addHistory(
-			@Param("userId") Long userId,
 			@Param("history") History history);
 
 	// idを元に編集

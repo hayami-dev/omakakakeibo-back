@@ -19,7 +19,7 @@ import com.example.app.mapper.HistoryMapper;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/histories")
+@RequestMapping("/api/histories")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:5173")
 public class HistoryController {
@@ -29,21 +29,18 @@ public class HistoryController {
 	//histories全件を取得
 	// http://localhost:8080/histories/1
 	@GetMapping("/{userId}")
-	public List<History> findAllHistories(
+	public ResponseEntity<List<History>> findAllHistories(
 			@PathVariable("userId") Long userId) {
-		return historyMapper.findByUserId(userId);
+		List<History> histories = historyMapper.findByUserId(userId);
+		return ResponseEntity.ok(histories);
 	}
 
-	// historyIdから1件を取得
-
 	// 新規追加
-	// http://localhost:8080/histories/add/1
-	@PostMapping("/add/{userId}")
+	// http://localhost:8080/histories/add
+	@PostMapping("/add")
 	public ResponseEntity<String> addHistory(
-			@PathVariable("userId") Long userId,
 			@RequestBody History history) {
-		historyMapper.addHistory(userId, history);
-
+		historyMapper.addHistory(history);
 		return ResponseEntity.ok("Success");
 	}
 
