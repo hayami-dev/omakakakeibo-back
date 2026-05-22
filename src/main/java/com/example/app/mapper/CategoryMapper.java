@@ -6,13 +6,13 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.example.app.domain.CategoryMaster;
-import com.example.app.dto.CategoryResponse;
+import com.example.app.domain.DtoCategoryResponse;
 
 @Mapper
 public interface CategoryMapper {
 
 	// ユーザーIDに紐づくカテゴリのスロット6つを取得
-	List<CategoryResponse> findByUserId(Long userId);
+	List<DtoCategoryResponse> findByUserId(Long userId);
 
 	// 新しいカテゴリをマスタテーブルへ登録する
 	int insertMaster(CategoryMaster master);

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.app.domain.CategoryMaster;
-import com.example.app.dto.CategoryResponse;
+import com.example.app.domain.DtoCategoryResponse;
 import com.example.app.mapper.CategoryMapper;
 
 @RestController
@@ -27,9 +27,9 @@ public class CategoryController {
 
 	// アクティブを全件返す：http://localhost:8080/api/categories/active/1
 	@GetMapping("/active/{userId}")
-	public ResponseEntity<List<CategoryResponse>> getActiveCategories(
+	public ResponseEntity<List<DtoCategoryResponse>> getActiveCategories(
 			@PathVariable("userId") Long userId) {
-		List<CategoryResponse> categories = categoryMapper.findByUserId(userId);
+		List<DtoCategoryResponse> categories = categoryMapper.findByUserId(userId);
 		return ResponseEntity.ok(categories);
 	}
 
@@ -37,8 +37,8 @@ public class CategoryController {
 	@PutMapping("/update")
 	@Transactional
 	public ResponseEntity<String> updateCategories(
-			@RequestBody List<CategoryResponse> response) {
-		for (CategoryResponse res : response) {
+			@RequestBody List<DtoCategoryResponse> response) {
+		for (DtoCategoryResponse res : response) {
 			// 現在のDBの状態を取得
 			CategoryMaster currentMaster = categoryMapper.findById(res.getUserId(), res.getCategoryId());
 

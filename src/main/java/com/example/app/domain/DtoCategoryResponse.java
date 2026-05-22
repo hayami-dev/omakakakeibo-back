@@ -1,4 +1,4 @@
-package com.example.app.dto;
+package com.example.app.domain;
 
 import java.time.LocalDateTime;
 
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryResponse {
+public class DtoCategoryResponse {
 	private Long userId;
 	private Long activeCatId;
 	private Long categoryId;
