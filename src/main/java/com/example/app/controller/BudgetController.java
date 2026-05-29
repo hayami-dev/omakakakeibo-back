@@ -1,5 +1,9 @@
 package com.example.app.controller;
 
+import java.util.Map;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,13 +39,24 @@ public class BudgetController {
 	// 今月の目標金額を追加
 	// http://localhost:8080/api/budget/add/1
 	@PostMapping("/add")
-	public ResponseEntity<String> addMonthBudget(
+	public ResponseEntity<?> addMonthBudget(
 			@RequestBody MonthlyBudget monthlyBudget) {
-		budgetMapper.addMonthlyBudget(
-				monthlyBudget.getTargetMonth(),
-				monthlyBudget.getUserId(),
-				monthlyBudget.getTargetAmount());
-		return ResponseEntity.ok("Success");
+		try {
+			budgetMapper.addMonthlyBudget(
+					monthlyBudget.getTargetMonth(),
+					monthlyBudget.getUserId(),
+					monthlyBudget.getTargetAmount());
+			return ResponseEntity.ok("Success");
+
+		} catch (DataIntegrityViolationException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body(Map.of("error", "ALREADY_EXISTS", "message",
+							"この月の目標金額は既に登録されています"));
+		} catch (Exception e) {
+			return ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Map.of("message", "サーバーエラーが発生しました"));
+		}
 	}
 
 }
