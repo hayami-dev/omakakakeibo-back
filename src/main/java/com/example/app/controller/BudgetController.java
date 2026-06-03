@@ -1,7 +1,5 @@
 package com.example.app.controller;
 
-import java.util.Map;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.app.domain.DtoErrorResponse;
 import com.example.app.domain.MonthlyBudget;
 import com.example.app.mapper.BudgetMapper;
 
@@ -49,13 +48,12 @@ public class BudgetController {
 			return ResponseEntity.ok("Success");
 
 		} catch (DataIntegrityViolationException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT)
-					.body(Map.of("error", "ALREADY_EXISTS", "message",
-							"この月の目標金額は既に登録されています"));
+			return ResponseEntity.badRequest()
+					.body(new DtoErrorResponse("ERR_BUDGET_DUPLICATE", "この月の目標金額は既に登録されています"));
 		} catch (Exception e) {
 			return ResponseEntity
 					.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(Map.of("message", "サーバーエラーが発生しました"));
+					.body(new DtoErrorResponse("ERR_INTERNAL_SERVER", "サーバー内部で予期せぬエラーが発生しました。"));
 		}
 	}
 
