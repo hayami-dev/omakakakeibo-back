@@ -72,6 +72,15 @@ public class CategoryController {
 					.body(new DtoErrorResponse("ERR_MIN_CATEGORIES", "カテゴリは最低2つセットする必要があります。"));
 		}
 
+		// カテゴリ名が10文字以上だったらエラーを返す
+		for (DtoCategoryResponse res : response) {
+			String name = res.getCategoryName();
+			if (name != null && name.length() > 10) {
+				return ResponseEntity.badRequest()
+						.body(new DtoErrorResponse("ERR_CATEGORY_LENGTH", "カテゴリー名は10文字以内で入力してください。"));
+			}
+		}
+
 		try {
 			// 各エラーが無かった場合
 			for (DtoCategoryResponse res : response) {
