@@ -38,8 +38,6 @@ INSERT INTO categories_master (user_id, category_name, color_index) VALUES
 (1, 'カフェ',     3),
 (1, 'わからない', 4),
 (1, '',     5);
-INSERT INTO categories_master (user_id, category_name, color_index) VALUES 
-(1, 'わからない', 4);
 
 -- =====================================================================
 -- 2. 【異常系】仕様・制約をすり抜けるゴミデータを防ぐエラーテスト
