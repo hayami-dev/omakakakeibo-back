@@ -1,0 +1,60 @@
+package com.example.app.controller;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.app.domain.DtoErrorResponse;
+import com.example.app.domain.MonthlyBudget;
+import com.example.app.mapper.BudgetMapper;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/budget")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
+public class BudgetController {
+
+	private final BudgetMapper budgetMapper;
+
+	// 年月を指定して目標金額を取得
+	// http://localhost:8080/api/budget/1/2026-03
+	@GetMapping("/{userId}/{targetMonth}")
+	public ResponseEntity<MonthlyBudget> getMonthlyBudget(
+			@PathVariable("userId") Long userId,
+			@PathVariable("targetMonth") String targetMonth) {
+		MonthlyBudget mb = budgetMapper.findByMonth(targetMonth, userId);
+		return ResponseEntity.ok(mb);
+	}
+
+	// 今月の目標金額を追加
+	// http://localhost:8080/api/budget/add/1
+	@PostMapping("/add")
+	public ResponseEntity<?> addMonthBudget(
+			@RequestBody MonthlyBudget monthlyBudget) {
+		try {
+			budgetMapper.addMonthlyBudget(
+					monthlyBudget.getTargetMonth(),
+					monthlyBudget.getUserId(),
+					monthlyBudget.getTargetAmount());
+			return ResponseEntity.ok("Success");
+
+		} catch (DataIntegrityViolationException e) {
+			return ResponseEntity.badRequest()
+					.body(new DtoErrorResponse("ERR_BUDGET_DUPLICATE", "この月の目標金額は既に登録されています"));
+		} catch (Exception e) {
+			return ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new DtoErrorResponse("ERR_INTERNAL_SERVER", "サーバー内部で予期せぬエラーが発生しました。"));
+		}
+	}
+
+}
