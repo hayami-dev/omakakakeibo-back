@@ -1,5 +1,5 @@
 <div style="text-align:center; margin-left:-3rem">
-<img src="src/main/resources/logo.svg"/>
+<img src="src/main/resources/images/logo.svg"/>
 </div>
 
 # おおまか家計簿アプリケーション
