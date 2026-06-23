@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.app.domain.MonthlyBudget;
 import com.example.app.exception.BusinessException;
+import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.BudgetMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -47,9 +48,9 @@ public class BudgetController {
 			return ResponseEntity.ok("Success");
 
 		} catch (DataIntegrityViolationException e) {
-			throw new BusinessException("ERR_BUDGET_DUPLICATE", "この月の目標金額は既に登録されています");
+			throw new BusinessException(ErrorCode.BUDGET_DUPLICATE);
 		} catch (Exception e) {
-			throw new BusinessException("ERR_INTERNAL_SERVER", "サーバー内部で予期せぬエラーが発生しました。");
+			throw new BusinessException(ErrorCode.INTERNAL_SERVER);
 		}
 	}
 

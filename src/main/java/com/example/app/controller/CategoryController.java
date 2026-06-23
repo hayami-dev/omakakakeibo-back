@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.app.domain.CategoryMaster;
 import com.example.app.domain.DtoCategoryResponse;
 import com.example.app.exception.BusinessException;
+import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.CategoryMapper;
 
 @RestController
@@ -49,7 +50,7 @@ public class CategoryController {
 				java.time.LocalDateTime now = java.time.LocalDateTime.now();
 
 				if (updatedAt.getYear() == now.getYear() && updatedAt.getMonth() == now.getMonth()) {
-					throw new BusinessException("ERR_MONTHLY_LIMIT", "カテゴリの変更は月に1回までです。");
+					throw new BusinessException(ErrorCode.MONTHLY_LIMIT);
 				}
 			}
 		}
@@ -66,14 +67,14 @@ public class CategoryController {
 		}
 		// カウントが2つ以下であればエラーを返す
 		if (validCategoryCount < 2) {
-			throw new BusinessException("ERR_MIN_CATEGORIES", "カテゴリは最低2つセットする必要があります。");
+			throw new BusinessException(ErrorCode.MIN_CATEGORIES);
 		}
 
 		// カテゴリ名が10文字以上だったらエラーを返す
 		for (DtoCategoryResponse res : response) {
 			String name = res.getCategoryName();
 			if (name != null && name.length() > 10) {
-				throw new BusinessException("ERR_CATEGORY_LENGTH", "カテゴリー名は10文字以内で入力してください。");
+				throw new BusinessException(ErrorCode.CATEGORY_LENGTH);
 			}
 		}
 
