@@ -1,7 +1,6 @@
 package com.example.app.controller;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.app.domain.DtoErrorResponse;
 import com.example.app.domain.MonthlyBudget;
+import com.example.app.exception.BusinessException;
+import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.BudgetMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -48,12 +48,9 @@ public class BudgetController {
 			return ResponseEntity.ok("Success");
 
 		} catch (DataIntegrityViolationException e) {
-			return ResponseEntity.badRequest()
-					.body(new DtoErrorResponse("ERR_BUDGET_DUPLICATE", "この月の目標金額は既に登録されています"));
+			throw new BusinessException(ErrorCode.BUDGET_DUPLICATE);
 		} catch (Exception e) {
-			return ResponseEntity
-					.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new DtoErrorResponse("ERR_INTERNAL_SERVER", "サーバー内部で予期せぬエラーが発生しました。"));
+			throw new BusinessException(ErrorCode.INTERNAL_SERVER);
 		}
 	}
 

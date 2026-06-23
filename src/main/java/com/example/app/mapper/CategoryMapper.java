@@ -34,4 +34,7 @@ public interface CategoryMapper {
 	// マスタテーブルの中から渡されたIDのカテゴリを返す
 	CategoryMaster findById(Long userId, Long categoryId);
 
+	// マスタテーブルからカテゴリを削除
+	void deleteCategoryById(Long userId, Long categoryId);
+
 }

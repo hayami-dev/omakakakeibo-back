@@ -58,15 +58,6 @@ INSERT INTO active_categories (user_id, category_id, slot_number) VALUES
 -- 現実の「今月（6月）」とは月がズレるため、フロントのJS判定（checkAlreadyEditCategory）が
 -- 正常に「true（編集可能！）」を返し、ボタンのロックがパッと解除されるテストができます！
 
--- ① categories_master の更新（4月に登録・更新されたことにする）
-INSERT INTO categories_master (category_id, user_id, category_name, color_index, is_active, updated_at) VALUES 
-(1, 1, '必要経費', 0, true, '2026-04-15 10:00:00'), 
-(2, 1, 'ごほうび', 1, true, '2026-04-15 10:00:00'),
-(3, 1, '推し活',   2, true, '2026-04-15 10:00:00'),
-(4, 1, 'カフェ',   3, true, '2026-04-15 10:00:00'),
-(5, 1, 'わからない', 4, true, '2026-04-15 10:00:00'),
-(6, 1, '予備枠',   5, true, '2026-04-15 10:00:00'); -- 💡 空欄テスト用に文字を入れてあります
-
 -- ② active_categories の更新（updated_at を 4月 に明示的に指定して枠にハメる）
 INSERT INTO active_categories (user_id, category_id, slot_number, updated_at) VALUES 
 (1, 1, 1, '2026-04-15 10:00:00'),
