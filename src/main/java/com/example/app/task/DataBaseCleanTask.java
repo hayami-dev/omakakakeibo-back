@@ -10,6 +10,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.app.domain.CategoryMaster;
 import com.example.app.domain.History;
@@ -34,6 +35,7 @@ public class DataBaseCleanTask {
 
 	@Scheduled(cron = "0 0 1 1 * ?") // 本番用
 	//	@Scheduled(cron = "*/10 * * * * ?") // テスト用（10秒おき）
+	@Transactional
 	public void allCleanUp() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
 		LocalDate sixMonthsAgo = LocalDate.now().minusMonths(5);
