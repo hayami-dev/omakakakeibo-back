@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -30,8 +32,8 @@ public class DataBaseCleanTask {
 	private final UserMapper userMapper;
 	private final CategoryMapper categoryMapper;
 
-	//	@Scheduled(cron = "0 0 1 1 * ?") // 本番用
-	@Scheduled(cron = "*/10 * * * * ?") // テスト用（10秒おき）
+	@Scheduled(cron = "0 0 1 1 * ?") // 本番用
+	//	@Scheduled(cron = "*/10 * * * * ?") // テスト用（10秒おき）
 	public void allCleanUp() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
 		LocalDate sixMonthsAgo = LocalDate.now().minusMonths(5);
@@ -192,4 +194,14 @@ public class DataBaseCleanTask {
 		// 🌟 なかみの完了区切り
 		System.out.println("------ 目標金額 完了（合計削除件数: " + deletedBudgetsCount + " 件） ------");
 	}
+
+	/* サーバー起動時にクリーンアップをすべて走らせる */
+	@EventListener(ApplicationReadyEvent.class)
+	public void initCleanUp() {
+		System.out.println("\n[起動システム] サーバーの起動を検知しました。");
+		System.out.println("[起動システム] 初回クレンジングを実行します。");
+
+		allCleanUp();
+	}
+
 }
