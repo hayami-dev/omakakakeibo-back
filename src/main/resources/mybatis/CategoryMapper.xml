@@ -2,19 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.app.mapper.CategoryMapper">
 	<!-- ユーザー毎のactive_categoriesを取得 -->
-	<select id="findByUserId"
-		resultType="DtoCategoryResponse">
+	<select id="findByUserId" resultType="DtoCategoryResponse">
 		SELECT
 		a.*,
 		m.category_name,
 		m.color_index
 		FROM active_categories AS a
 		JOIN
-		categories_master AS m ON a.category_id =
+		categories_master AS m ON
+		a.category_id =
 		m.category_id
 		WHERE a.user_id
 		= #{userId}
-		ORDER BY a.active_cat_id
+		ORDER BY
+		a.active_cat_id
 	</select>
 
 	<!--カテゴリをマスタテーブルへ新規登録 -->
@@ -50,18 +51,25 @@
 	<!--ユーザー毎のcategories_masterを全件取得 -->
 	<select id="findAllCategoriesMaster">
 		SELECT * FROM categories_master
-		WHERE user_id = #{userId}
+		WHERE user_id =
+		#{userId}
 	</select>
 
 	<!-- 渡されたcategory_idを元に該当のカテゴリを返す -->
-	<select id="findById"
-		resultType="CategoryMaster">
+	<select id="findById" resultType="CategoryMaster">
 		SELECT * FROM categories_master
 		WHERE category_id =
 		#{categoryId}
 		AND user_id = #{userId}
 	</select>
 
+	<!-- 渡されたuser_idとcategory_idを元にカテゴリを1件削除 -->
+	<delete id="deleteCategoryById">
+		DELETE FROM categories_master
+		WHERE category_id =
+		#{categoryId}
+		AND user_id = #{userId}
+	</delete>
 
 
 </mapper>

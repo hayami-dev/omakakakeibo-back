@@ -5,27 +5,32 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.example.app.domain.CategoryMaster;
 import com.example.app.domain.History;
 import com.example.app.domain.MonthlyBudget;
 import com.example.app.domain.User;
 import com.example.app.mapper.BudgetMapper;
+import com.example.app.mapper.CategoryMapper;
 import com.example.app.mapper.HistoryMapper;
 import com.example.app.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
 
 @Component
+@EnableScheduling
 @RequiredArgsConstructor
 public class DataBaseCleanTask {
 
 	private final BudgetMapper budgetMapper;
 	private final HistoryMapper historyMapper;
 	private final UserMapper userMapper;
+	private final CategoryMapper categoryMapper;
 
-	// @Scheduled(cron = "0 0 1 1 * ?") // 本番用
+	//	@Scheduled(cron = "0 0 1 1 * ?") // 本番用
 	@Scheduled(cron = "*/10 * * * * ?") // テスト用（10秒おき）
 	public void allCleanUp() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
@@ -41,7 +46,12 @@ public class DataBaseCleanTask {
 
 		System.out.println("--------------------------------------------------");
 
-		// 2. 目標金額(Monthly_budgets)のクレンジング
+		// 2. カテゴリマスタ(categories_master)のクレンジング
+		cleanUpOldCategory(users);
+
+		System.out.println("--------------------------------------------------");
+
+		// 3. 目標金額(Monthly_budgets)のクレンジング
 		cleanUpOldBudget(users, sixMonthsAgo, formatter);
 
 		System.out.println("==================================================");
@@ -50,7 +60,7 @@ public class DataBaseCleanTask {
 	}
 
 	/**
-	 * History
+	 * histories
 	 * @param users
 	 * @param sixMonthsAgo
 	 */
@@ -88,14 +98,61 @@ public class DataBaseCleanTask {
 	}
 
 	/**
-	 * Budget
+	 * categories
+	 * @param users
+	 */
+	public void cleanUpOldCategory(List<User> users) {
+		System.out.println("------ 2. カテゴリ クレンジング ------");
+
+		// 表示用のカウント
+		int totalDeletedCount = 0;
+
+		// 全てのuser情報を取り出す
+		for (User user : users) {
+			// user情報からuserIdを取り出す
+			Long userId = user.getUserId();
+
+			// userIdからカテゴリマスタを全件取得
+			List<CategoryMaster> categoryMaster = categoryMapper.findAllCategoriesMaster(userId);
+
+			List<Long> categoryIds = new ArrayList<Long>();
+
+			// category_nameが空欄かつis_activeがfalseのcategory_idを探しだす
+			for (CategoryMaster category : categoryMaster) {
+				String categoryName = category.getCategoryName();
+				Boolean isActive = category.getIsActive();
+
+				if ((categoryName == null || categoryName.isBlank()) && !isActive) {
+					Long categoryId = category.getCategoryId();
+					categoryIds.add(categoryId);
+				}
+			}
+
+			if (categoryIds.size() > 0) {
+				System.out.println("  [検出] ユーザーID: " + userId + " の不要なカテゴリを " + categoryIds.size() + " 件検出しました。削除します...");
+
+			} else {
+				System.out.println("  [スキップ] ユーザーID: " + userId + " に削除対象のカテゴリはありません。");
+			}
+
+			for (Long categoryId : categoryIds) {
+				categoryMapper.deleteCategoryById(userId, categoryId);
+				totalDeletedCount++;
+			}
+		} // userのfor文終わり
+		System.out.println("------ カテゴリ 完了（合計削除件数: " + totalDeletedCount + " 件） ------");
+
+	}
+
+	/**
+	 * monthly_Budget
 	 * @param users
 	 * @param sixMonthsAgo
 	 * @param formatter
 	 */
 	public void cleanUpOldBudget(List<User> users, LocalDate sixMonthsAgo, DateTimeFormatter formatter) {
 
-		System.out.println("------ 2. 目標金額 クレンジング ------");
+		System.out.println("------ 3. 目標金額 クレンジング ------");
 
 		String targetMonth = sixMonthsAgo.format(formatter);
 
