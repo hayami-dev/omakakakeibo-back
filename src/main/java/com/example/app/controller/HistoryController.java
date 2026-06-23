@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.app.domain.CategoryMaster;
-import com.example.app.domain.DtoErrorResponse;
 import com.example.app.domain.History;
+import com.example.app.exception.BusinessException;
+import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.CategoryMapper;
 import com.example.app.mapper.HistoryMapper;
 
@@ -45,12 +46,7 @@ public class HistoryController {
 	@PostMapping("/add")
 	public ResponseEntity<String> addHistory(
 			@RequestBody History history) {
-		ResponseEntity<?> errorResponse = validateHistory(history);
-
-		if (errorResponse != null) {
-			return (ResponseEntity<String>) errorResponse;
-		}
-
+		validateHistory(history);
 		historyMapper.addHistory(history);
 		return ResponseEntity.ok("Success");
 	}
@@ -62,12 +58,7 @@ public class HistoryController {
 			@PathVariable("userId") Long userId,
 			@PathVariable("historyId") Long historyId,
 			@RequestBody History history) {
-		ResponseEntity<?> errorResponse = validateHistory(history);
-
-		if (errorResponse != null) {
-			return (ResponseEntity<String>) errorResponse;
-		}
-
+		validateHistory(history);
 		historyMapper.editHistory(userId, historyId, history);
 		return ResponseEntity.ok("Success");
 	}
@@ -89,13 +80,11 @@ public class HistoryController {
 		// amountのチェック
 		// 大きすぎる値
 		if (request.getAmount() != null && request.getAmount() > 99999999) {
-			return ResponseEntity.badRequest()
-					.body(new DtoErrorResponse("ERR_AMOUNT_TOO_LARGE", "金額が大きすぎます。9,999万9,999円以内で入力してください。"));
+			throw new BusinessException(ErrorCode.AMOUNT_TOO_LARGE);
 		}
 		// 最低値～負の値
 		if (request.getAmount() != null && request.getAmount() < 1) {
-			return ResponseEntity.badRequest()
-					.body(new DtoErrorResponse("ERR_AMOUNT_NEGATIVE", "1円より小さな値は入力できません。"));
+			throw new BusinessException(ErrorCode.AMOUNT_NEGATIVE);
 		}
 
 		// historyDateのチェック
@@ -106,8 +95,7 @@ public class HistoryController {
 
 			// 今日より未来の日付はエラー
 			if (inputDate.isAfter(today)) {
-				return ResponseEntity.badRequest()
-						.body(new DtoErrorResponse("ERR_DATE_FUTURE", "未来の日付は登録できません。"));
+				throw new BusinessException(ErrorCode.DATE_FUTURE);
 			}
 
 			// 今日より6ヶ月間の基準日を計算する（例：今日が6/4→1/1になる）
@@ -115,8 +103,7 @@ public class HistoryController {
 
 			// 入力された日付が、6ヶ月よりも過去ならエラー
 			if (inputDate.isBefore(sixMonthsAgo)) {
-				return ResponseEntity.badRequest()
-						.body(new DtoErrorResponse("ERR_DATE_TOO_PAST", "6ヶ月以上前の日付は登録できません。"));
+				throw new BusinessException(ErrorCode.DATE_TOO_PAST);
 			}
 		}
 
@@ -128,8 +115,7 @@ public class HistoryController {
 		boolean isOwnCategory = (cateogory != null);
 
 		if (!isOwnCategory) {
-			return ResponseEntity.badRequest()
-					.body(new DtoErrorResponse("ERR_CATEGORY_INVALID", "指定されたカテゴリは利用できません。"));
+			throw new BusinessException(ErrorCode.CATEGORY_INVALID);
 		}
 
 		return null;
