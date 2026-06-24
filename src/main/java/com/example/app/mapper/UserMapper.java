@@ -2,7 +2,10 @@ package com.example.app.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.example.app.domain.User;
@@ -10,7 +13,26 @@ import com.example.app.domain.User;
 @Mapper
 public interface UserMapper {
 
-	// 全ユーザーを取得
+	// クリーンアップ用：全ユーザーを取得
 	@Select("SELECT * FROM users")
 	List<User> findAllUser();
+
+	// userIdからユーザー情報を1件取得
+	@Select("SELECT * FROM users "
+			+ "WHERE user_id = #{userId}")
+	User findById(
+			@Param("userId") Long userId);
+
+	// ログイン用：メールアドレスからユーザー情報を1件取得
+	@Select("SELECT * FROM users "
+			+ "WHERE email = #{email}")
+	User findByEmail(
+			@Param("email") String email);
+
+	// 新規登録用：ユーザーを追加
+	@Insert("INSERT INTO users (email, password_hash) "
+			+ "VALUES(#{email}, #{passwordHash})")
+	@Options(useGeneratedKeys = true, keyProperty = "userId")
+	void insertUser(
+			User user);
 }
