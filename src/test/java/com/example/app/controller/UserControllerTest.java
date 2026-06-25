@@ -37,7 +37,7 @@ class UserControllerTest {
 	void registerUser_Success() throws Exception {
 		// 1. テスト用のリクエストデータ（DTO）を用意
 		DtoRegisterRequest request = new DtoRegisterRequest();
-		request.setEmail("test@example.com");
+		request.setLoginId("test@example.com");
 		request.setPassword("password123");
 
 		// 2. MockMvcを使って、実際にフロントからリクエストが飛んできた状態をシミュレート
@@ -57,7 +57,7 @@ class UserControllerTest {
 	void registerUser_BadRequest_InvalidEmail() throws Exception {
 		// 1. メアドの形式が明らかに不正なDTOを用意
 		DtoRegisterRequest request = new DtoRegisterRequest();
-		request.setEmail("invalid-email-format"); // @がない
+		request.setLoginId("invalid-email-format"); // @がない
 		request.setPassword("password123");
 
 		// 2. リクエストを送信してテスト
@@ -75,7 +75,7 @@ class UserControllerTest {
 	void registerUser_BadRequest_BlankEmail() throws Exception {
 		// 1. メアドが空っぽのDTOを用意
 		DtoRegisterRequest request = new DtoRegisterRequest();
-		request.setEmail(""); // 空文字
+		request.setLoginId(""); // 空文字
 		request.setPassword("password123");
 
 		// 2. リクエストを送信してテスト

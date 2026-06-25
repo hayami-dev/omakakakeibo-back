@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.app.domain.DtoLoginRequest;
 import com.example.app.domain.DtoRegisterRequest;
 import com.example.app.domain.DtoUserAuthToken;
 import com.example.app.domain.User;
@@ -34,13 +35,13 @@ public class UserController {
 	public ResponseEntity<String> requestRegister(
 			@Valid @RequestBody DtoRegisterRequest request) {
 		// メアドを取得
-		String email = request.getEmail();
+		String loginId = request.getLoginId();
 
 		// トークン発行
 		String token = java.util.UUID.randomUUID().toString();
 
 		// DBにトークンを保存
-		userMapper.insertToken(email, token);
+		userMapper.insertToken(loginId, token);
 
 		// 開発用：コンソールに認証用のフロントURLを出力
 
@@ -84,7 +85,7 @@ public class UserController {
 
 		// DTO から User ドメインへ詰め替え
 		User user = new User();
-		user.setEmail(request.getEmail());
+		user.setLoginId(request.getLoginId());
 		// パスワードをハッシュ化してセット
 
 		String rawPassword = request.getPassword();
@@ -97,5 +98,31 @@ public class UserController {
 		System.out.println("発行されたID: " + user.getUserId());
 
 		return ResponseEntity.ok().body("Success");
+	}
+
+	// ログイン
+	@PostMapping("/login")
+	public ResponseEntity<?> loginUser(
+			@Valid @RequestBody DtoLoginRequest request) {
+		String loginId = request.getLoginId();
+		String password = request.getPassword();
+
+		User user = userMapper.findByLoginId(loginId);
+
+		if (user == null) {
+			return ResponseEntity.badRequest().body("ログインできませんでした。ユーザーID、パスワードを再度ご確認ください。");
+		}
+
+		boolean isPasswordMatch = BCrypt.checkpw(password, user.getPasswordHash());
+
+		if (!isPasswordMatch) {
+			return ResponseEntity.badRequest().body("ログインできませんでした。ユーザーID、パスワードを再度ご確認ください。");
+		}
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("userId", user.getUserId());
+		response.put("loginId", user.getLoginId());
+
+		return ResponseEntity.ok(response);
 	}
 }

@@ -7,7 +7,7 @@ CREATE TABLE user_auth_tokens (
     user_id INTEGER,
     token_type VARCHAR(20), -- 'reset', 'email_change'
     token_hash TEXT,
-    new_email VARCHAR(255),
+    new_login_id VARCHAR(255),
     expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id)
