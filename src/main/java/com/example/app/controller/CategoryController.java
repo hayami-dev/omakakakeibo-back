@@ -21,7 +21,7 @@ import com.example.app.mapper.CategoryMapper;
 
 @RestController
 @RequestMapping("api/categories")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class CategoryController {
 
 	@Autowired
