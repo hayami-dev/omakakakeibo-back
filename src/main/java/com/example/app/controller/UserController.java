@@ -72,7 +72,7 @@ public class UserController {
 
 		// 見つかった場合Mapに詰める
 		Map<String, String> response = new HashMap<>();
-		response.put("email", validTokenData.getNewEmail());
+		response.put("loginId", validTokenData.getNewLoginId());
 
 		return ResponseEntity.ok(response);
 

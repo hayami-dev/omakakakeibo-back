@@ -14,7 +14,7 @@ import com.example.app.domain.UserAuthToken;
 @Mapper
 public interface UserMapper {
 
-	//クリーンアップ用：全ユーザーを取得
+	// クリーンアップ用：全ユーザーを取得
 	@Select("SELECT * FROM users")
 	List<User> findAllUser();
 
