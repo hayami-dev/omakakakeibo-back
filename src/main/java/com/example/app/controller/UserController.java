@@ -80,7 +80,7 @@ public class UserController {
 
 	// ユーザー新規登録
 	@PostMapping("/register")
-	public ResponseEntity<String> registerUser(
+	public ResponseEntity<?> registerUser(
 			@Valid @RequestBody DtoRegisterRequest request) {
 
 		// DTO から User ドメインへ詰め替え
@@ -95,9 +95,10 @@ public class UserController {
 		// DBへ保存
 		userMapper.insertUser(user);
 		// この時点でuserIdが発行
-		System.out.println("発行されたID: " + user.getUserId());
+		Long newUserId = user.getUserId();
+		System.out.println("発行されたID: " + newUserId);
 
-		return ResponseEntity.ok().body("Success");
+		return ResponseEntity.ok().body(newUserId);
 	}
 
 	// ログイン

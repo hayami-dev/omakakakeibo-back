@@ -52,4 +52,5 @@ public interface UserMapper {
 			+ "AND token_type = 'email_verify' "
 			+ "AND expires_at > NOW()")
 	UserAuthToken findValidToken(@Param("token") String token);
+
 }
