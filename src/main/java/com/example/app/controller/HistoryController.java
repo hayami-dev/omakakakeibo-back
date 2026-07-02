@@ -3,6 +3,8 @@ package com.example.app.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +22,7 @@ import com.example.app.exception.BusinessException;
 import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.CategoryMapper;
 import com.example.app.mapper.HistoryMapper;
+import com.example.app.service.HistoryService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,15 +32,21 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class HistoryController {
 
+	private final HistoryService historyService;
 	private final HistoryMapper historyMapper;
 	private final CategoryMapper categoryMapper;
 
 	//histories全件を取得
-	// http://localhost:8080/histories/1
-	@GetMapping("/{userId}")
+	// http://localhost:8080/histories/
+	@GetMapping
 	public ResponseEntity<List<History>> findAllHistories(
-			@PathVariable("userId") Long userId) {
-		List<History> histories = historyMapper.findByUserId(userId);
+			HttpServletRequest request) {
+
+		String loginId = (String) request.getAttribute("loginId");
+
+		// メアドから履歴を取得するメソッドを呼ぶ
+
+		List<History> histories = historyService.getHistoriesByLoginId(loginId);
 		return ResponseEntity.ok(histories);
 	}
 
