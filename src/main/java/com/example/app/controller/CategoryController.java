@@ -2,7 +2,8 @@ package com.example.app.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,20 +19,27 @@ import com.example.app.domain.DtoCategoryResponse;
 import com.example.app.exception.BusinessException;
 import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.CategoryMapper;
+import com.example.app.service.CategoryService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("api/categories")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class CategoryController {
 
-	@Autowired
-	private CategoryMapper categoryMapper;
+	private final CategoryMapper categoryMapper;
+	private final CategoryService categoryService;
 
-	// アクティブを全件返す：http://localhost:8080/api/categories/active/1
-	@GetMapping("/active/{userId}")
+	// アクティブを全件返す：http://localhost:8080/api/categories/active
+	@GetMapping("/active")
 	public ResponseEntity<List<DtoCategoryResponse>> getActiveCategories(
-			@PathVariable("userId") Long userId) {
-		List<DtoCategoryResponse> categories = categoryMapper.findByUserId(userId);
+			HttpServletRequest request) {
+
+		String loginId = (String) request.getAttribute("loginId");
+
+		List<DtoCategoryResponse> categories = categoryService.getActiveCategoryByLoginId(loginId);
 		return ResponseEntity.ok(categories);
 	}
 
@@ -119,12 +127,15 @@ public class CategoryController {
 		return ResponseEntity.ok("Success");
 	}
 
-	// 指定されたuser_idのmaster_categoriesテーブルを全件返す
-	// http://localhost:8080/api/categories/master/1
-	@GetMapping("/master/{userId}")
+	// master_categoriesテーブルを全件返す
+	// http://localhost:8080/api/categories/master
+	@GetMapping("/master")
 	public ResponseEntity<List<CategoryMaster>> getCategoriesMaster(
-			@PathVariable("userId") Long userId) {
-		List<CategoryMaster> categoryMasterList = categoryMapper.findAllCategoriesMaster(userId);
+			HttpServletRequest request) {
+
+		String loginId = (String) request.getAttribute("loginId");
+
+		List<CategoryMaster> categoryMasterList = categoryService.getCategoryMasterByLoginId(loginId);
 		return ResponseEntity.ok(categoryMasterList);
 	}
 
