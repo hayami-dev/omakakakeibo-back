@@ -3,9 +3,12 @@ package com.example.app.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +22,7 @@ import com.example.app.domain.DtoUserAuthToken;
 import com.example.app.domain.User;
 import com.example.app.domain.UserAuthToken;
 import com.example.app.mapper.UserMapper;
+import com.example.app.security.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserMapper userMapper;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	// ユーザーの新規登録用のトークン発行
 	@PostMapping("/register-request")
@@ -104,7 +109,9 @@ public class UserController {
 	// ログイン
 	@PostMapping("/login")
 	public ResponseEntity<?> loginUser(
-			@Valid @RequestBody DtoLoginRequest request) {
+			@Valid @RequestBody DtoLoginRequest request,
+			HttpServletResponse response) {
+
 		String loginId = request.getLoginId();
 		String password = request.getPassword();
 
@@ -120,10 +127,19 @@ public class UserController {
 			return ResponseEntity.badRequest().body("ログインできませんでした。ユーザーID、パスワードを再度ご確認ください。");
 		}
 
-		Map<String, Object> response = new HashMap<>();
-		response.put("userId", user.getUserId());
-		response.put("loginId", user.getLoginId());
+		// トークンを発行
+		String token = jwtTokenProvider.createToken(user.getLoginId());
 
-		return ResponseEntity.ok(response);
+		// cookieへ登録
+		ResponseCookie cookie = ResponseCookie.from("SESSION_TOKEN", token)
+				.httpOnly(true)
+				.secure(true)
+				.path("/")
+				.maxAge(3600)
+				.build();
+
+		response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+		return ResponseEntity.ok("ログイン成功");
 	}
 }
