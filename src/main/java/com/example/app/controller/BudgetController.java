@@ -1,5 +1,7 @@
 package com.example.app.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +16,7 @@ import com.example.app.domain.MonthlyBudget;
 import com.example.app.exception.BusinessException;
 import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.BudgetMapper;
+import com.example.app.service.BudgetService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,14 +27,17 @@ import lombok.RequiredArgsConstructor;
 public class BudgetController {
 
 	private final BudgetMapper budgetMapper;
+	private final BudgetService budgetService;
 
 	// 年月を指定して目標金額を取得
-	// http://localhost:8080/api/budget/1/2026-03
-	@GetMapping("/{userId}/{targetMonth}")
+	// http://localhost:8080/api/budget/2026-03
+	@GetMapping("/{targetMonth}")
 	public ResponseEntity<MonthlyBudget> getMonthlyBudget(
-			@PathVariable("userId") Long userId,
+			HttpServletRequest request,
 			@PathVariable("targetMonth") String targetMonth) {
-		MonthlyBudget mb = budgetMapper.findByMonth(targetMonth, userId);
+		String loginId = (String) request.getAttribute("loginId");
+
+		MonthlyBudget mb = budgetService.getMonthlyBudget(targetMonth, loginId);
 		return ResponseEntity.ok(mb);
 	}
 
