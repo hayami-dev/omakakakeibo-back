@@ -3,14 +3,17 @@ package com.example.app.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -142,4 +145,31 @@ public class UserController {
 
 		return ResponseEntity.ok("ログイン成功");
 	}
+
+	// 現在ログイン中（トークンが有効か）を返す
+	@GetMapping("/me")
+	public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+		String loginId = (String) request.getAttribute("loginId");
+		if (loginId == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
+		return ResponseEntity.ok(loginId);
+
+	}
+
+	// ログアウト
+	@PostMapping("/logout")
+	public ResponseEntity<?> logoutUser(
+			HttpServletResponse response) {
+		ResponseCookie cookie = ResponseCookie.from("SESSION_TOKEN", "")
+				.path("/")
+				.maxAge(0)
+				.build();
+
+		return ResponseEntity.ok()
+				.header(HttpHeaders.SET_COOKIE, cookie.toString())
+				.body("ログアウト成功");
+	}
+
 }
