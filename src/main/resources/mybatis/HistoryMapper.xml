@@ -39,4 +39,8 @@
 		#{userId}
 	</delete>
 
+	<!-- historyIdから1件取得 -->
+	<select id="findByHistoryId" resultType="com.example.app.domain.History">
+		SELECT * FROM histories WHERE history_id = #{historyId}
+	</select>
 </mapper>

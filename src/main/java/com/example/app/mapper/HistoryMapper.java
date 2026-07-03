@@ -27,4 +27,7 @@ public interface HistoryMapper {
 	void deleteHistory(
 			@Param("userId") Long userId,
 			@Param("historyId") Long historyId);
+
+	// idを元に1件取得
+	History findByHistoryId(@Param("historyId") Long historyId);
 }
