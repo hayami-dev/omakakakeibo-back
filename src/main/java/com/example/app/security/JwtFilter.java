@@ -36,7 +36,11 @@ public class JwtFilter implements Filter {
 		String requestURI = httpRequest.getRequestURI();
 
 		// ログイン画面はスルー
-		if (requestURI.startsWith("/api/auth/")) {
+		// ただしログイン状態の確認用API(/auth/me)は除外
+		if (requestURI.equals("/api/auth/login") ||
+				requestURI.equals("/api/auth/register") ||
+				requestURI.equals("/api/auth/register-request") ||
+				requestURI.equals("/api/auth/verify-token")) {
 			chain.doFilter(request, response);
 			return;
 		}
