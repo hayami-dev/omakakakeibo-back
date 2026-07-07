@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class User {
 	private Long userId; // SERIAL -> Long
-	private String email;
+	private String LoginId;
 	private String passwordHash;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;

@@ -4,7 +4,7 @@
 	<!-- histories全件取得 -->
 	<select id="findByUserId"
 		resultType="com.example.app.domain.History">
-		SELECT * FROM histories ORDER BY history_date ASC
+		SELECT * FROM histories WHERE user_id = #{userId} ORDER BY history_date ASC
 	</select>
 
 	<!-- 新規追加 -->
@@ -39,4 +39,8 @@
 		#{userId}
 	</delete>
 
+	<!-- historyIdから1件取得 -->
+	<select id="findByHistoryId" resultType="com.example.app.domain.History">
+		SELECT * FROM histories WHERE history_id = #{historyId}
+	</select>
 </mapper>

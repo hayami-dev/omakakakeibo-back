@@ -14,7 +14,7 @@ public class UserAuthToken {
 	private Long userId; // INTEGER -> Long
 	private String tokenType;
 	private String tokenHash;
-	private String newEmail;
+	private String newLoginId;
 	private LocalDateTime expiresAt;
 	private LocalDateTime usedAt;
 }
