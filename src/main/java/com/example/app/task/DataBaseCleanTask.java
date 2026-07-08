@@ -16,9 +16,11 @@ import com.example.app.domain.CategoryMaster;
 import com.example.app.domain.History;
 import com.example.app.domain.MonthlyBudget;
 import com.example.app.domain.User;
+import com.example.app.domain.UserAuthToken;
 import com.example.app.mapper.BudgetMapper;
 import com.example.app.mapper.CategoryMapper;
 import com.example.app.mapper.HistoryMapper;
+import com.example.app.mapper.UserAuthTokenMapper;
 import com.example.app.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class DataBaseCleanTask {
 	private final HistoryMapper historyMapper;
 	private final UserMapper userMapper;
 	private final CategoryMapper categoryMapper;
+	private final UserAuthTokenMapper userAuthTokenMapper;
 
 	@Scheduled(cron = "0 0 1 1 * ?") // 本番用
 	//	@Scheduled(cron = "*/10 * * * * ?") // テスト用（10秒おき）
@@ -57,6 +60,11 @@ public class DataBaseCleanTask {
 
 		// 3. 目標金額(Monthly_budgets)のクレンジング
 		cleanUpOldBudget(users, sixMonthsAgo, formatter);
+
+		System.out.println("--------------------------------------------------");
+
+		// 4. トークン(user_auth_tokens)のクレンジング
+		cleanUpOldToken();
 
 		System.out.println("==================================================");
 		System.out.println("====== [定期バッチ] クリーンアップ完了 ======");
@@ -193,8 +201,26 @@ public class DataBaseCleanTask {
 		System.out.println("  [削除] " + targetMonth + " より古いデータを削除します。");
 		int deletedBudgetsCount = budgetMapper.deleteOldBudgets(targetMonth);
 
-		// 🌟 なかみの完了区切り
 		System.out.println("------ 目標金額 完了（合計削除件数: " + deletedBudgetsCount + " 件） ------");
+	}
+
+	/**
+	 * user_auth_token のクレンジング
+	 */
+	public void cleanUpOldToken() {
+		System.out.println("------ 4. トークン クレンジング ------");
+
+		// 削除する前に件数を取得（ログ用）
+		List<UserAuthToken> expiredTokens = userAuthTokenMapper.findAllExpired();
+		int count = expiredTokens.size();
+
+		if (count > 0) {
+			System.out.println("  [検出] 有効期限切れのトークンを " + count + " 件検出しました。削除します...");
+			userAuthTokenMapper.deleteAllExpired();
+			System.out.println("  [完了] " + count + " 件の削除が完了しました。");
+		} else {
+			System.out.println("  [スキップ] 有効期限切れのトークンはありません。");
+		}
 	}
 
 	/* サーバー起動時にクリーンアップをすべて走らせる */
