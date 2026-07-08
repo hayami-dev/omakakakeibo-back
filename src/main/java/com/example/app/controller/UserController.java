@@ -26,6 +26,7 @@ import com.example.app.domain.User;
 import com.example.app.domain.UserAuthToken;
 import com.example.app.mapper.UserMapper;
 import com.example.app.security.JwtTokenProvider;
+import com.example.app.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,6 +38,7 @@ public class UserController {
 
 	private final UserMapper userMapper;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final UserService userService;
 
 	// ユーザーの新規登録用のトークン発行
 	@PostMapping("/register-request")
@@ -91,20 +93,7 @@ public class UserController {
 	public ResponseEntity<?> registerUser(
 			@Valid @RequestBody DtoRegisterRequest request) {
 
-		// DTO から User ドメインへ詰め替え
-		User user = new User();
-		user.setLoginId(request.getLoginId());
-		// パスワードをハッシュ化してセット
-
-		String rawPassword = request.getPassword();
-		String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
-		user.setPasswordHash(hashedPassword);
-
-		// DBへ保存
-		userMapper.insertUser(user);
-		// この時点でuserIdが発行
-		Long newUserId = user.getUserId();
-		System.out.println("発行されたID: " + newUserId);
+		ResponseEntity<?> newUserId = userService.registerUser(request);
 
 		return ResponseEntity.ok().body(newUserId);
 	}

@@ -71,5 +71,20 @@
 		AND user_id = #{userId}
 	</delete>
 
+	<!--初期値の登録-->
+	<insert id="addInitialCategoriesMaster">
+	INSERT INTO categories_master (user_id, category_name, color_index) VALUES 
+		(#{userId}, '必要経費',   0), 
+		(#{userId}, 'ごほうび',   1),
+		(#{userId}, '推し活',     2),
+		(#{userId}, 'カフェ',     3),
+		(#{userId}, 'わからない', 4),
+		(#{userId}, '',     5);
+	</insert>
+
+	<insert id="addInitialActiveCategories">
+	INSERT INTO active_categories (user_id, category_id, slot_number) VALUES 
+		(#{userId}, #{categoryId}, #{slotNumber});
+	</insert>
 
 </mapper>

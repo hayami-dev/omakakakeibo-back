@@ -37,4 +37,11 @@ public interface CategoryMapper {
 	// マスタテーブルからカテゴリを削除
 	void deleteCategoryById(Long userId, Long categoryId);
 
+	// 新規登録用：初期値を登録する
+	// カテゴリマスタ
+	void addInitialCategoriesMaster(Long userId);
+
+	// アクティブカテゴリ
+	void addInitialActiveCategories(Long userId, Long categoryId, Integer slotNumber);
+
 }
