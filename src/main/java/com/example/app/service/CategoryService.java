@@ -19,16 +19,20 @@ public class CategoryService {
 	private final CategoryMapper categoryMapper;
 	private final UserMapper userMapper;
 
+	// ログインIDからアクティブカテゴリを返す
 	public List<DtoCategoryResponse> getActiveCategoryByLoginId(String loginId) {
 		User user = userMapper.findByLoginId(loginId);
 
 		return categoryMapper.findByUserId(user.getUserId());
 	}
 
+	// ログインIDからカテゴリマスタを返す
 	public List<CategoryMaster> getCategoryMasterByLoginId(String loginId) {
 		User user = userMapper.findByLoginId(loginId);
 
 		return categoryMapper.findAllCategoriesMaster(user.getUserId());
 	}
+
+	// カテゴリの変更
 
 }

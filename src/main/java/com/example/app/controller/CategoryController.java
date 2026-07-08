@@ -48,17 +48,27 @@ public class CategoryController {
 	@Transactional(rollbackFor = Exception.class) // 例外が起きたらロールバック
 	public ResponseEntity<?> updateCategories(
 			@RequestBody List<DtoCategoryResponse> response) {
+		if (response == null || response.isEmpty())
+			return ResponseEntity.badRequest().build();
 
-		// 前回の変更月が同じ場合、エラーを返す
-		for (DtoCategoryResponse res : response) {
-			CategoryMaster currentMaster = categoryMapper.findById(res.getUserId(), res.getCategoryId());
+		// ユーザー新規登録直後のデフォルト値のみが登録されていた場合
+		// 月1回の制限を外す
+		Long userId = response.get(0).getUserId();
+		List<CategoryMaster> userCategories = categoryMapper.findAllCategoriesMaster(userId);
+		boolean isFirstChange = userCategories.size() <= 6;
 
-			if (currentMaster != null && currentMaster.getUpdatedAt() != null) {
-				java.time.LocalDateTime updatedAt = currentMaster.getUpdatedAt();
-				java.time.LocalDateTime now = java.time.LocalDateTime.now();
+		if (!isFirstChange) {
+			// 前回の変更月が同じ場合、エラーを返す
+			for (DtoCategoryResponse res : response) {
+				CategoryMaster currentMaster = categoryMapper.findById(res.getUserId(), res.getCategoryId());
 
-				if (updatedAt.getYear() == now.getYear() && updatedAt.getMonth() == now.getMonth()) {
-					throw new BusinessException(ErrorCode.MONTHLY_LIMIT);
+				if (currentMaster != null && currentMaster.getUpdatedAt() != null) {
+					java.time.LocalDateTime updatedAt = currentMaster.getUpdatedAt();
+					java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+					if (updatedAt.getYear() == now.getYear() && updatedAt.getMonth() == now.getMonth()) {
+						throw new BusinessException(ErrorCode.MONTHLY_LIMIT);
+					}
 				}
 			}
 		}
