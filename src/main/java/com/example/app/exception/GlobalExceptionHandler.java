@@ -1,7 +1,12 @@
 package com.example.app.exception;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException; // 🌟追加
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -17,6 +22,25 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<DtoErrorResponse> handleBusinessException(BusinessException ex) {
 		DtoErrorResponse errorResponse = new DtoErrorResponse(ex.getCode(), ex.getMessage());
 		return ResponseEntity.badRequest().body(errorResponse);
+	}
+
+	/**
+	 * @Validによるバリデーションエラー（400番）
+	 * 入力チェックエラーが400番でフロントに返る
+	 */
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+		Map<String, String> errors = new HashMap<>();
+
+		// どのフィールド（emailなど）が、どんなメッセージでエラーになったかを収集
+		ex.getBindingResult().getAllErrors().forEach((error) -> {
+			String fieldName = ((FieldError) error).getField();
+			String errorMessage = error.getDefaultMessage();
+			errors.put(fieldName, errorMessage);
+		});
+
+		// ステータスコード 400 (Bad Request) でエラー内容を返却
+		return ResponseEntity.badRequest().body(errors);
 	}
 
 	/**

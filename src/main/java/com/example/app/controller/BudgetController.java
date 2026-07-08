@@ -1,6 +1,7 @@
 package com.example.app.controller;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,47 +12,43 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.app.domain.MonthlyBudget;
-import com.example.app.exception.BusinessException;
-import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.BudgetMapper;
+import com.example.app.service.BudgetService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/budget")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class BudgetController {
 
 	private final BudgetMapper budgetMapper;
+	private final BudgetService budgetService;
 
 	// 年月を指定して目標金額を取得
-	// http://localhost:8080/api/budget/1/2026-03
-	@GetMapping("/{userId}/{targetMonth}")
+	// http://localhost:8080/api/budget/2026-03
+	@GetMapping("/{targetMonth}")
 	public ResponseEntity<MonthlyBudget> getMonthlyBudget(
-			@PathVariable("userId") Long userId,
+			HttpServletRequest request,
 			@PathVariable("targetMonth") String targetMonth) {
-		MonthlyBudget mb = budgetMapper.findByMonth(targetMonth, userId);
+		String loginId = (String) request.getAttribute("loginId");
+
+		MonthlyBudget mb = budgetService.getMonthlyBudget(targetMonth, loginId);
 		return ResponseEntity.ok(mb);
 	}
 
 	// 今月の目標金額を追加
-	// http://localhost:8080/api/budget/add/1
+	// http://localhost:8080/api/budget/add
 	@PostMapping("/add")
 	public ResponseEntity<?> addMonthBudget(
-			@RequestBody MonthlyBudget monthlyBudget) {
-		try {
-			budgetMapper.addMonthlyBudget(
-					monthlyBudget.getTargetMonth(),
-					monthlyBudget.getUserId(),
-					monthlyBudget.getTargetAmount());
-			return ResponseEntity.ok("Success");
+			@RequestBody MonthlyBudget monthlyBudget,
+			HttpServletRequest request) {
+		String loginId = (String) request.getAttribute("loginId");
 
-		} catch (DataIntegrityViolationException e) {
-			throw new BusinessException(ErrorCode.BUDGET_DUPLICATE);
-		} catch (Exception e) {
-			throw new BusinessException(ErrorCode.INTERNAL_SERVER);
-		}
+		budgetService.addMonthlyBudget(loginId, monthlyBudget);
+
+		return ResponseEntity.ok("目標金額追加に成功");
 	}
 
 }
