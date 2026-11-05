@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -33,9 +34,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = "${app.frontend-origin}", allowCredentials = "true")
 public class UserController {
 
+	@Value("${app.frontend-origin}")
+	private String frontendOrigin;
+	
 	private final UserMapper userMapper;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserService userService;
@@ -57,7 +61,7 @@ public class UserController {
 
 		System.out.println("==================================================");
 		System.out.println("【開発用】認証メールを送信しました。以下のURLにアクセスしてください：");
-		System.out.println("http://localhost:5173/auth/register/verify?token=" + token);
+		System.out.println(frontendOrigin + "/auth/register/verify?token=" + token);
 		System.out.println("==================================================");
 
 		return ResponseEntity.ok().body("Success");

@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/histories")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = "${app.frontend-origin}", allowCredentials = "true")
 public class HistoryController {
 
 	private final HistoryService historyService;

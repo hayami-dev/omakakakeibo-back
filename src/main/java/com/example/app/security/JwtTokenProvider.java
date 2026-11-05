@@ -1,7 +1,9 @@
 package com.example.app.security;
 
+import java.security.Key;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -12,7 +14,9 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtTokenProvider {
 
-	private final String SECRET_KEY = "super-secret-and-very-long-key-for-jwt-authentication-example"; // 本当はランダムな32文字の文字列
+	@Value("${jwt.secret}")
+	private String secretKey;
+
 	private final long VALIDITY_IN_MILLISECONDS = 3600000; // 1時間
 
 	public String createToken(String loginId) {
@@ -26,7 +30,7 @@ public class JwtTokenProvider {
 				.setClaims(claims)
 				.setIssuedAt(now)
 				.setExpiration(validity)
-				.signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
+				.signWith(getKey(), SignatureAlgorithm.HS256)
 				.compact();
 	}
 
@@ -34,7 +38,7 @@ public class JwtTokenProvider {
 	public boolean validateToken(String token) {
 		try {
 			Jwts.parserBuilder()
-					.setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+					.setSigningKey(getKey())
 					.build().parseClaimsJws(token);
 
 			return true;
@@ -46,11 +50,16 @@ public class JwtTokenProvider {
 	// トークンからIDを取り出す
 	public String getLoginId(String token) {
 		return Jwts.parserBuilder()
-				.setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+				.setSigningKey(getKey())
 				.build()
 				.parseClaimsJws(token)
 				.getBody()
 				.getSubject();// createToken で setSubject(loginId) したやつを取り出す
 
+	}
+
+	// secretKeyを取得するメソッド
+	private Key getKey() {
+		return Keys.hmacShaKeyFor(secretKey.getBytes());
 	}
 }
