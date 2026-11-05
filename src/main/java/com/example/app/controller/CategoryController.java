@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/categories")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = "${app.frontend-origin}", allowCredentials = "true")
 public class CategoryController {
 
 	private final CategoryMapper categoryMapper;
