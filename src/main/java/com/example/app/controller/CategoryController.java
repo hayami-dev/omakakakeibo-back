@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +18,7 @@ import com.example.app.domain.DtoCategoryResponse;
 import com.example.app.exception.BusinessException;
 import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.CategoryMapper;
+import com.example.app.mapper.UserMapper;
 import com.example.app.service.CategoryService;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,7 @@ public class CategoryController {
 
 	private final CategoryMapper categoryMapper;
 	private final CategoryService categoryService;
+	private final UserMapper userMapper;
 
 	// アクティブを全件返す：http://localhost:8080/api/categories/active
 	@GetMapping("/active")
@@ -47,13 +48,20 @@ public class CategoryController {
 	@PutMapping("/update")
 	@Transactional(rollbackFor = Exception.class) // 例外が起きたらロールバック
 	public ResponseEntity<?> updateCategories(
-			@RequestBody List<DtoCategoryResponse> response) {
+			@RequestBody List<DtoCategoryResponse> response,
+			HttpServletRequest request) {
 		if (response == null || response.isEmpty())
 			return ResponseEntity.badRequest().build();
 
+		// ログイン中のユーザーからuserIdを取得しリクエスト内の値を上書きする
+		String loginId = (String) request.getAttribute("loginId");
+		Long userId = userMapper.findByLoginId(loginId).getUserId();
+		for (DtoCategoryResponse res : response) {
+			res.setUserId(userId);
+		}
+
 		// ユーザー新規登録直後のデフォルト値のみが登録されていた場合
 		// 月1回の制限を外す
-		Long userId = response.get(0).getUserId();
 		List<CategoryMaster> userCategories = categoryMapper.findAllCategoriesMaster(userId);
 		boolean isFirstChange = userCategories.size() <= 6;
 
@@ -115,7 +123,7 @@ public class CategoryController {
 			// もともと値があった場合、古いマスターをアーカイブ(false)にする
 			// (値あり→値なし、値あり→別の値、どちらのケースでも共通して必要)
 			if (currentMaster != null) {
-				categoryMapper.updateActiveStatus(currentMaster.getCategoryId(), false);
+				categoryMapper.updateActiveStatus(userId, currentMaster.getCategoryId(), false);
 			}
 
 			// 新しい名前でマスターを登録（""であっても登録する）
@@ -129,10 +137,15 @@ public class CategoryController {
 			categoryMapper.insertMaster(newMaster);
 
 			// active_categories（スロット）の指し先を新しいIDに書き換える
-			categoryMapper.updateActive(
+			// 自分の枠ではないactiveCatIdの場合、書き換わった件数は0になる
+			int updated = categoryMapper.updateActive(
 					res.getActiveCatId(),
 					res.getUserId(),
 					newMaster.getCategoryId());
+			// もし戻り値が0ならエラーを投げる
+			if (updated == 0) {
+				throw new BusinessException(ErrorCode.CATEGORY_INVALID);
+			}
 		}
 		return ResponseEntity.ok("Success");
 	}
@@ -147,16 +160,6 @@ public class CategoryController {
 
 		List<CategoryMaster> categoryMasterList = categoryService.getCategoryMasterByLoginId(loginId);
 		return ResponseEntity.ok(categoryMasterList);
-	}
-
-	// 指定されたuser_idとcategory_idから1件を返す
-	// http://localhost:8080/api/categories/master/1/1
-	@GetMapping("/master/{userId}/{categoryId}")
-	public ResponseEntity<CategoryMaster> getMasterCategoryById(
-			@PathVariable("userId") Long userId,
-			@PathVariable("categoryId") Long categoryId) {
-		CategoryMaster categoryMaster = categoryMapper.findById(userId, categoryId);
-		return ResponseEntity.ok(categoryMaster);
 	}
 
 }
