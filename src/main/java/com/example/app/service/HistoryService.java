@@ -44,15 +44,20 @@ public class HistoryService {
 	}
 
 	// historyの編集
-	public void editHistory(History history, Long historyId) {
-		History newHistory = historyMapper.findByHistoryId(historyId);
+	public void editHistory(History history, Long historyId, String loginId) {
+		User user = userMapper.findByLoginId(loginId);
+		History newHistory = historyMapper.findByHistoryId(user.getUserId(), historyId);
+		if (newHistory == null) {
+			throw new BusinessException(ErrorCode.HISTORY_NOT_FOUND);
+		}
+
 		newHistory.setAmount(history.getAmount());
 		newHistory.setCategoryId(history.getCategoryId());
 		newHistory.setHistoryDate(history.getHistoryDate());
 
 		validateHistory(newHistory);
 
-		historyMapper.editHistory(newHistory.getUserId(), newHistory.getHistoryId(), newHistory);
+		historyMapper.editHistory(user.getUserId(), newHistory.getHistoryId(), newHistory);
 	}
 
 	// historyの削除

@@ -62,9 +62,10 @@ public class HistoryController {
 	@PutMapping("edit/{historyId}")
 	public ResponseEntity<String> editHistory(
 			@PathVariable("historyId") Long historyId,
-			@RequestBody History history) {
-
-		historyService.editHistory(history, historyId);
+			@RequestBody History history,
+			HttpServletRequest request) {
+		String loginId = (String) request.getAttribute("loginId");
+		historyService.editHistory(history, historyId,loginId);
 
 		return ResponseEntity.ok("Success");
 	}
