@@ -44,8 +44,9 @@ public class HistoryService {
 	}
 
 	// historyの編集
-	public void editHistory(History history, Long historyId) {
-		History newHistory = historyMapper.findByHistoryId(historyId);
+	public void editHistory(History history, Long historyId, String loginId) {
+		User user = userMapper.findByLoginId(loginId);   // 追加（まだ使わなくてよい）
+		History newHistory = historyMapper.findByHistoryId(user.getUserId(),historyId);
 		newHistory.setAmount(history.getAmount());
 		newHistory.setCategoryId(history.getCategoryId());
 		newHistory.setHistoryDate(history.getHistoryDate());

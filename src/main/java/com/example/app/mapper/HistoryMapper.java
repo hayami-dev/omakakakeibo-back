@@ -29,5 +29,7 @@ public interface HistoryMapper {
 			@Param("historyId") Long historyId);
 
 	// idを元に1件取得
-	History findByHistoryId(@Param("historyId") Long historyId);
+	History findByHistoryId(
+			@Param("userId") Long userId,
+			@Param("historyId") Long historyId);
 }
