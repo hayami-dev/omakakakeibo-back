@@ -19,6 +19,7 @@ import com.example.app.domain.DtoCategoryResponse;
 import com.example.app.exception.BusinessException;
 import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.CategoryMapper;
+import com.example.app.mapper.UserMapper;
 import com.example.app.service.CategoryService;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class CategoryController {
 
 	private final CategoryMapper categoryMapper;
 	private final CategoryService categoryService;
+	private final UserMapper userMapper;
 
 	// アクティブを全件返す：http://localhost:8080/api/categories/active
 	@GetMapping("/active")
@@ -47,13 +49,20 @@ public class CategoryController {
 	@PutMapping("/update")
 	@Transactional(rollbackFor = Exception.class) // 例外が起きたらロールバック
 	public ResponseEntity<?> updateCategories(
-			@RequestBody List<DtoCategoryResponse> response) {
+			@RequestBody List<DtoCategoryResponse> response,
+			HttpServletRequest request) {
 		if (response == null || response.isEmpty())
 			return ResponseEntity.badRequest().build();
 
+		// ログイン中のユーザーからuserIdを取得しリクエスト内の値を上書きする
+		String loginId = (String) request.getAttribute("loginId");
+		Long userId = userMapper.findByLoginId(loginId).getUserId();
+		for (DtoCategoryResponse res : response) {
+			res.setUserId(userId);
+		}
+
 		// ユーザー新規登録直後のデフォルト値のみが登録されていた場合
 		// 月1回の制限を外す
-		Long userId = response.get(0).getUserId();
 		List<CategoryMaster> userCategories = categoryMapper.findAllCategoriesMaster(userId);
 		boolean isFirstChange = userCategories.size() <= 6;
 
