@@ -25,6 +25,7 @@ public interface CategoryMapper {
 
 	// 指定したカテゴリの有効・無効を切替
 	int updateActiveStatus(
+			@Param("userId") Long userId,
 			@Param("categoryId") Long categoryId,
 			@Param("isActive") Boolean isActive);
 
