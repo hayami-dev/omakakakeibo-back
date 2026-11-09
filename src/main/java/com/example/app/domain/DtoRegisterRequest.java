@@ -17,5 +17,7 @@ public class DtoRegisterRequest {
 	@Email(message = "正しいメールアドレスの形式で入力してください。")
 	private String loginId;
 
+	@NotBlank(message = "パスワードは必須入力です。")
+	@Size(min = 8, max = 72, message = "パスワードは8文字以上72文字以内で入力してください。")
 	private String password;
 }
