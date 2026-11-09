@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.app.domain.DtoLoginRequest;
+import com.example.app.domain.DtoRegisterEmailRequest;
 import com.example.app.domain.DtoRegisterRequest;
 import com.example.app.domain.DtoUserAuthToken;
 import com.example.app.domain.User;
@@ -49,7 +50,7 @@ public class UserController {
 	// ユーザーの新規登録用のトークン発行
 	@PostMapping("/register-request")
 	public ResponseEntity<String> requestRegister(
-			@Valid @RequestBody DtoRegisterRequest request) {
+			@Valid @RequestBody DtoRegisterEmailRequest request) {
 		// メアドを取得
 		String loginId = request.getLoginId();
 
