@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.app.domain.DtoLoginRequest;
+import com.example.app.domain.DtoRegisterConfirmRequest;
 import com.example.app.domain.DtoRegisterEmailRequest;
-import com.example.app.domain.DtoRegisterRequest;
 import com.example.app.domain.DtoUserAuthToken;
 import com.example.app.domain.User;
 import com.example.app.domain.UserAuthToken;
@@ -102,12 +102,12 @@ public class UserController {
 
 	// ユーザー新規登録
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(
-			@Valid @RequestBody DtoRegisterRequest request) {
+	public ResponseEntity<Long> registerUser(
+			@Valid @RequestBody DtoRegisterConfirmRequest request) {
 
-		ResponseEntity<?> newUserId = userService.registerUser(request);
+		Long newUserId = userService.registerUser(request);
 
-		return ResponseEntity.ok().body(newUserId);
+		return ResponseEntity.ok(newUserId);
 	}
 
 	// ログイン

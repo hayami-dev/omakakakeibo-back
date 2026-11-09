@@ -56,7 +56,7 @@ public interface UserMapper {
 	UserAuthToken findValidToken(@Param("token") String token);
 
 	// トークンを使用済みにする
-	@Update("UPDATE user_auth_tokens SET used_at NOW() "
+	@Update("UPDATE user_auth_tokens SET used_at = NOW() "
 			+ "WHERE token_hash = #{token} AND used_at IS NULL")
 	int markTokenUsed(@Param("token") String token);
 }
