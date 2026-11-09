@@ -5,11 +5,11 @@ SELECT * FROM omakakakeibo_db.user_auth_tokens;
 CREATE TABLE user_auth_tokens (
     token_id SERIAL PRIMARY KEY,
     user_id INTEGER,
-    token_type VARCHAR(20), -- 'reset', 'email_change'
+    token_type VARCHAR(20), -- 'reset', 'email_change', 'email_verify'
     token_hash TEXT,
     new_login_id VARCHAR(255),
     expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    used_at TIMESTAMP NULL DEFAULT NULL,
     INDEX idx_user_id (user_id)
 );
 

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.example.app.domain.User;
 import com.example.app.domain.UserAuthToken;
@@ -50,7 +51,12 @@ public interface UserMapper {
 	@Select("SELECT * FROM user_auth_tokens "
 			+ "WHERE token_hash = #{token} "
 			+ "AND token_type = 'email_verify' "
-			+ "AND expires_at > NOW()")
+			+ "AND expires_at > NOW() "
+			+ "AND used_at IS NULL")
 	UserAuthToken findValidToken(@Param("token") String token);
 
+	// トークンを使用済みにする
+	@Update("UPDATE user_auth_tokens SET used_at NOW() "
+			+ "WHERE token_hash = #{token} AND used_at IS NULL")
+	int markTokenUsed(@Param("token") String token);
 }
