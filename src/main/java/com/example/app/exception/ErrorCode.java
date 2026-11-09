@@ -23,6 +23,8 @@ public enum ErrorCode {
 	HISTORY_NOT_FOUND(
 			"ERR_HISTORY_NOT_FOUND",
 			"指定された履歴が見つかりません。"),
+	LOGIN_ID_DUPLICATED(
+			"ERR_LOGIN_ID_DUPLICATED", "このメールアドレスは既に登録されています。"),
 	INTERNAL_SERVER(
 			"ERR_INTERNAL_SERVER",
 			"サーバー内部で予期せぬエラーが発生しました。");

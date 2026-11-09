@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.example.app.domain.CategoryMaster;
 import com.example.app.domain.DtoRegisterRequest;
 import com.example.app.domain.User;
+import com.example.app.exception.BusinessException;
+import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.CategoryMapper;
 import com.example.app.mapper.UserMapper;
 
@@ -23,6 +25,11 @@ public class UserService {
 
 	// 新規登録
 	public ResponseEntity<?> registerUser(DtoRegisterRequest request) {
+		// 登録済みのloginIdなら止める
+		if (userMapper.findByLoginId(request.getLoginId()) != null) {
+			throw new BusinessException(ErrorCode.LOGIN_ID_DUPLICATED);
+		}
+
 		// DTO から User ドメインへ詰め替え
 		User user = new User();
 		user.setLoginId(request.getLoginId());

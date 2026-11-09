@@ -25,6 +25,8 @@ import com.example.app.domain.DtoRegisterRequest;
 import com.example.app.domain.DtoUserAuthToken;
 import com.example.app.domain.User;
 import com.example.app.domain.UserAuthToken;
+import com.example.app.exception.BusinessException;
+import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.UserMapper;
 import com.example.app.security.JwtTokenProvider;
 import com.example.app.service.UserService;
@@ -39,7 +41,7 @@ public class UserController {
 
 	@Value("${app.frontend-origin}")
 	private String frontendOrigin;
-	
+
 	private final UserMapper userMapper;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserService userService;
@@ -50,6 +52,11 @@ public class UserController {
 			@Valid @RequestBody DtoRegisterRequest request) {
 		// メアドを取得
 		String loginId = request.getLoginId();
+
+		// 同じloginIdが登録されないようチェック
+		if (userMapper.findByLoginId(loginId) != null) {
+			throw new BusinessException(ErrorCode.LOGIN_ID_DUPLICATED);
+		}
 
 		// トークン発行
 		String token = java.util.UUID.randomUUID().toString();
