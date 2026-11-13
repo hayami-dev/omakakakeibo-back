@@ -21,10 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.app.domain.DtoLoginRequest;
-import com.example.app.domain.DtoRegisterRequest;
+import com.example.app.domain.DtoRegisterConfirmRequest;
+import com.example.app.domain.DtoRegisterEmailRequest;
 import com.example.app.domain.DtoUserAuthToken;
 import com.example.app.domain.User;
 import com.example.app.domain.UserAuthToken;
+import com.example.app.exception.BusinessException;
+import com.example.app.exception.ErrorCode;
 import com.example.app.mapper.UserMapper;
 import com.example.app.security.JwtTokenProvider;
 import com.example.app.service.UserService;
@@ -39,7 +42,7 @@ public class UserController {
 
 	@Value("${app.frontend-origin}")
 	private String frontendOrigin;
-	
+
 	private final UserMapper userMapper;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserService userService;
@@ -47,9 +50,14 @@ public class UserController {
 	// ユーザーの新規登録用のトークン発行
 	@PostMapping("/register-request")
 	public ResponseEntity<String> requestRegister(
-			@Valid @RequestBody DtoRegisterRequest request) {
+			@Valid @RequestBody DtoRegisterEmailRequest request) {
 		// メアドを取得
 		String loginId = request.getLoginId();
+
+		// 同じloginIdが登録されないようチェック
+		if (userMapper.findByLoginId(loginId) != null) {
+			throw new BusinessException(ErrorCode.LOGIN_ID_DUPLICATED);
+		}
 
 		// トークン発行
 		String token = java.util.UUID.randomUUID().toString();
@@ -94,12 +102,12 @@ public class UserController {
 
 	// ユーザー新規登録
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(
-			@Valid @RequestBody DtoRegisterRequest request) {
+	public ResponseEntity<Long> registerUser(
+			@Valid @RequestBody DtoRegisterConfirmRequest request) {
 
-		ResponseEntity<?> newUserId = userService.registerUser(request);
+		Long newUserId = userService.registerUser(request);
 
-		return ResponseEntity.ok().body(newUserId);
+		return ResponseEntity.ok(newUserId);
 	}
 
 	// ログイン
